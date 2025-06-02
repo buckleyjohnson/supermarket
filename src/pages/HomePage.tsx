@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import Button from "../components/Button";
 import CancelButton from "../components/CancelButton";
 import ProductCard from "../components/ProductCard";
@@ -12,6 +13,9 @@ export default function HomePage(){
         <CancelButton /><br />
 
         <ProductCard />
+        <Link to='/checkout_page'>
+        <button type="button" className="btn btn-primary">Checkout</button>
+        </Link>
         </div>
     )
 }
