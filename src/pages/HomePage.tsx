@@ -12,7 +12,7 @@ export default function HomePage(){
         <Button /><br />
         <CancelButton /><br />
 
-        <ProductCard />
+        {/* <ProductCard /> */}
         <Link to='/checkout_page'>
         <button type="button" className="btn btn-primary">Checkout</button>
         </Link>

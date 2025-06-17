@@ -1,28 +1,27 @@
-import { Box } from './FancyBox';
-import appleImg from '../images/apple.jpeg';
-import * as styles from '../styles/ProductCard.css';
+// components/ProductCard.tsx
+import { type Product } from '../types/Product';
+import * as s from '../styles/ProductCard.css';
 
-function ProductCard() {
-    return (
-        <Box
-            className={styles.card}
-            p={{ mobile: 'sm', desktop: 'md' }}
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
-            gap="sm"
-            background="surface"
-            borderRadius="md"
-            boxShadow="0 2px 8px rgba(0,0,0,0.08)"
-            width={{ mobile: '100%', desktop: 320 }}
-            maxWidth={320}
-            transition="box-shadow 0.2s"
-        >
-            <img src={appleImg} alt="Apple" width={220} />
-            <h3>Apple</h3>
-            <p>$1.25</p>
-        </Box>
-    );
+export default function ProductCard({ product }: { product: Product }) {
+  const handleAdd = () => {
+    /* toast + dispatch … */
+  };
+
+  return (
+    <article className={s.card}>
+      <img className={s.image} src={product.image} alt={product.name} />
+
+      {/* body text stays in its own flex column */}
+    <div className={s.bodyPanel}>
+        <h4 className={s.title}>{product.name}</h4>
+        <p className={s.textMuted}>{product.description}</p>
+        <p className={s.price}>${product.price.toFixed(2)}</p>
+    </div>
+
+      {/*  👉 slide-in bar is now a direct child of <article>  */}
+      <div className={s.addBar} onClick={handleAdd}>
+        🛒 Add to Cart
+      </div>
+    </article>
+  );
 }
-
-export default ProductCard;

@@ -1,0 +1,66 @@
+// src/data/products.ts
+import { type Product } from '../types/Product';
+import appleImg from '../images/apple.jpeg';
+
+export const products: Product[] = [
+  {
+    id: 1,
+    name: 'Red Apple',
+    description: 'Crisp, juicy red apple.',
+    weight: 1,
+    price: 1.25,
+    image: appleImg,
+    category: 'Fruits',
+    idsn: 18-1,
+  },
+  {
+    id: 2,
+    name: 'Salami',
+    description: 'Traditional Italian meat stick.',
+    weight: 1,
+    price: 6.80,
+    image: appleImg,
+    category: 'Meats',
+    idsn: 182,
+  },
+  {
+    id: 3,
+    name: 'Cottage Cheese',
+    description: 'Small-curd, 2 % milkfat.',
+    weight: 1.5,
+    price: 4.10,
+    image: appleImg,
+    category: 'Dairy',
+    idsn: 183,
+  },
+  {
+    id: 4,
+    name: 'Potato Chips',
+    description: 'Sour Cream & Onion, family size.',
+    weight: 0.75,
+    price: 3.60,
+    image: appleImg,
+    category: 'Snacks',
+    idsn: 184,
+  },
+  {
+    id: 5,
+    name: 'Orange',
+    description: 'Seedless navel orange.',
+    weight: 1,
+    price: 1.10,
+    image: appleImg,
+    category: 'Fruits',
+    idsn: 185,
+  },
+  {
+    id: 6,
+    name: 'Whole Milk',
+    description: 'Vitamin D, pasteurized, 1 qt.',
+    weight: 2,
+    price: 2.35,
+    image: appleImg,
+    category: 'Dairy',
+    idsn: 186,
+  },
+];

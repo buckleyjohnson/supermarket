@@ -22,7 +22,7 @@ const transitions = {
 } as const;
 
 const sizes = {
-    full: '100%',
+    // full: '100%',
     sm: 220,
     md: 320,
     lg: 480,
@@ -37,7 +37,7 @@ const responsiveProps = defineProperties({
     defaultCondition: 'mobile',
 
     properties: {
-        display: ['none', 'block', 'flex'],
+        display: ['none', 'block', 'flex', 'grid'],
         flexDirection: ['row', 'column'],
         justifyContent: ['flex-start', 'center', 'space-between'],
         alignItems: ['stretch', 'center'],
@@ -62,6 +62,13 @@ const responsiveProps = defineProperties({
         c: ['color'],
     },
 } as const);
-
+export {
+    space,
+    colors,
+    radii,
+    boxShadows,
+    transitions,
+    sizes,
+};
 export const sprinkles = createSprinkles(responsiveProps);
 export type Sprinkles = Parameters<typeof sprinkles>[0];
