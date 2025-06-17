@@ -7,11 +7,12 @@ import * as s from '../styles/ProductsPage.css';
 
 export default function ProductsPage() {
     return (
-
-    <section className={s.grid /* or "productGrid" for plain CSS */}>
-        {products.map(p => (
-            <ProductCard key={p.id} product={p} />
-        ))}
-    </section>
+    <><h3>Product Page</h3>
+        <section className={s.grid /* or "productGrid" for plain CSS */}>
+            {products.map(p => (
+                <ProductCard key={p.id} product={p} />
+            ))}
+        </section>
+    </>
         );
 }
