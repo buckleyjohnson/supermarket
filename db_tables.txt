@@ -1,0 +1,80 @@
+CREATE TABLE users (
+  id            INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  email         VARCHAR(255) NOT NULL UNIQUE,
+  password_hash VARCHAR(255) NOT NULL,            -- bcrypt/argon2id hash
+  created_at    TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at    TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP
+                                       ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+
+
+CREATE TABLE roles (
+  id          INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  name        VARCHAR(64)  NOT NULL UNIQUE,   -- e.g. 'Customer', 'Cashier'
+  created_at  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP
+                                     ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+
+INSERT INTO roles (name) VALUES
+  ('Customer'),
+  ('Cashier'),
+  ('Store Manager'),
+  ('Inventory Manager'),
+  ('Supplier'),
+  ('Marketing/CRM Manager'),
+  ('Stocking/Warehouse Staff'),
+  ('System Administrator');
+
+
+CREATE TABLE user_roles (
+  user_id INT UNSIGNED NOT NULL,
+  role_id INT UNSIGNED NOT NULL,
+  PRIMARY KEY (user_id, role_id),
+
+  CONSTRAINT fk_userroles_user
+      FOREIGN KEY (user_id) REFERENCES users(id)
+      ON DELETE CASCADE,
+
+  CONSTRAINT fk_userroles_role
+      FOREIGN KEY (role_id) REFERENCES roles(id)
+      ON DELETE CASCADE
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci;
+
+
+
+CREATE TABLE time_entries (
+  id         INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  user_id    INT UNSIGNED NOT NULL,
+  clock_in   DATETIME      NOT NULL,
+  clock_out  DATETIME      DEFAULT NULL,
+  
+  CONSTRAINT fk_time_user
+            FOREIGN KEY (user_id)
+            REFERENCES users(id)
+            ON DELETE CASCADE,          -- delete shifts if user removed
+  
+  /* Helpful composite index for open-shift lookup               */
+  INDEX ix_time_user_open (user_id, clock_out)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci;
+
+///add this for running reports with a lot of users.
+  CREATE INDEX ix_time_date ON time_entries (clock_in, clock_out);
+
+  INSERT INTO products
+  (isdn, image_url, unit_size, name, price_cents, category)
+VALUES
+  ('9780001112223',                         
+   'https://example.com/images/apple.jpg',  
+   '1 lb bag',                              
+   'Gala Apple',                            
+   199,                                     
+   'Produce');  

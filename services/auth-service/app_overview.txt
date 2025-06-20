@@ -126,13 +126,3 @@ So far I have 2 servers: "server", and "client".
  micro services so I think I should set up at least one more server to demonstrate the micro services. 
 
 
-
-# React + TypeScript + Vite
-
-//test time summary endpoint:--returns {json}
-curl -G \
-  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhbGljZUBleGFtcGxlLmNvbSIsInJvbGVzIjpbIkN1c3RvbWVyIiwiU3RvcmUgTWFuYWdlciJdLCJpYXQiOjE3NTAwOTEyMzksImV4cCI6MTc1MDY5NjAzOX0.TToTPah5YWxauVgTeSm6RPTE85awWw6TBddxPca8QuA" \
-  --data-urlencode "user=1"  \
-  --data-urlencode "from=2025-06-01" \
-  --data-urlencode "to=2025-06-30"   \
-  http://localhost:4000/api/employees/time/summary
