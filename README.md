@@ -1,6 +1,14 @@
-To run: 
+To run: There are 4 servers to start.
 open inventory-ui folder and run: npm run serve
-open client folder and run: npm run dev
+open client, inventory-service, auth-service folders and run: npm run dev
+
+create .env file in auth-services folder:
+DB_HOST=localhost
+DB_USER=root
+DB_PASS=password
+DB_NAME=ecommerce
+JWT_SECRET=somelongrandomstring
+PORT=4001
 
 
 
