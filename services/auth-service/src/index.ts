@@ -30,9 +30,9 @@ app.use(express.json());
 app.get('/api/health', (_req, res) => res.send('API is healthy ✨'));
 
 /* Feature routes */
-app.use('/api/auth', authRouter);
-app.use('/api/products', productsRouter);      // remove if not ready
-app.use('/api/employees', employeesRouter); 
+app.use('/auth', authRouter);
+app.use('/products', productsRouter);      // remove if not ready
+app.use('/employees', employeesRouter); 
 
 /* 404 fallback */
 app.all('*', (_req, res) => res.status(404).json({ msg: 'Route not found' }));

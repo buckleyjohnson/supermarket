@@ -1,0 +1,99 @@
+-- Incremental Database Setup Script for Supermarket Application
+-- This script only adds missing components without affecting existing tables
+
+-- Create databases if they don't exist
+CREATE DATABASE IF NOT EXISTS ecommerce CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS supermarket CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- Create user for the application (with stronger password)
+CREATE USER IF NOT EXISTS 'inv_user'@'localhost' IDENTIFIED BY 'Password123!';
+
+-- Grant privileges
+GRANT ALL PRIVILEGES ON ecommerce.* TO 'inv_user'@'localhost';
+GRANT ALL PRIVILEGES ON supermarket.* TO 'inv_user'@'localhost';
+FLUSH PRIVILEGES;
+
+-- Use ecommerce database for additional tables
+USE ecommerce;
+
+-- Create roles table if it doesn't exist (compatible with existing users table)
+CREATE TABLE IF NOT EXISTS roles (
+  id          INT NOT NULL AUTO_INCREMENT,
+  name        VARCHAR(64)  NOT NULL UNIQUE,
+  created_at  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+-- Insert default roles if they don't exist
+INSERT IGNORE INTO roles (name) VALUES
+  ('Customer'),
+  ('Cashier'),
+  ('Store Manager'),
+  ('Inventory Manager'),
+  ('Supplier'),
+  ('Marketing/CRM Manager'),
+  ('Stocking/Warehouse Staff'),
+  ('System Administrator');
+
+-- Create user_roles table if it doesn't exist (using INT to match existing users table)
+CREATE TABLE IF NOT EXISTS user_roles (
+  user_id INT NOT NULL,
+  role_id INT NOT NULL,
+  PRIMARY KEY (user_id, role_id),
+
+  CONSTRAINT fk_userroles_user
+      FOREIGN KEY (user_id) REFERENCES users(id)
+      ON DELETE CASCADE,
+
+  CONSTRAINT fk_userroles_role
+      FOREIGN KEY (role_id) REFERENCES roles(id)
+      ON DELETE CASCADE
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+-- Create time_entries table if it doesn't exist (using INT to match existing users table)
+CREATE TABLE IF NOT EXISTS time_entries (
+  id         INT AUTO_INCREMENT PRIMARY KEY,
+  user_id    INT NOT NULL,
+  clock_in   DATETIME      NOT NULL,
+  clock_out  DATETIME      DEFAULT NULL,
+  
+  CONSTRAINT fk_time_user
+            FOREIGN KEY (user_id)
+            REFERENCES users(id)
+            ON DELETE CASCADE,
+  
+  INDEX ix_time_user_open (user_id, clock_out),
+  INDEX ix_time_date (clock_in, clock_out)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+-- Switch to supermarket database for products table
+USE supermarket;
+
+-- Create products table if it doesn't exist
+CREATE TABLE IF NOT EXISTS products (
+  id           INT AUTO_INCREMENT PRIMARY KEY,
+  isdn         VARCHAR(20)   NOT NULL UNIQUE,
+  image_url    VARCHAR(500),
+  unit_size    VARCHAR(100),
+  name         VARCHAR(255)  NOT NULL,
+  price_cents  INT          NOT NULL,
+  category     VARCHAR(100),
+  created_at   TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+  updated_at   TIMESTAMP    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  
+  INDEX idx_category (category),
+  INDEX idx_name (name),
+  INDEX idx_price (price_cents)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+-- Insert sample product if it doesn't exist
+INSERT IGNORE INTO products
+  (isdn, image_url, unit_size, name, price_cents, category)
+VALUES
+  ('9780001112223',                         
+   'https://example.com/images/apple.jpg',  
+   '1 lb bag',                              
+   'Gala Apple',                            
+   199,                                     
+   'Produce');

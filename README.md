@@ -1,4 +1,32 @@
-Big-picture roadmap
+Before running:
+
+mysql -u root -p < db_setup_clean.txt
+
+
+create database named supermarket with the table: products
+create database named ecommerce with the tables: roles, time_entries,
+user_roles, users
+
+look in the db_tables.txt for queries to create them.
+run script that creates db's and tables: mysql -u root -p < db_setup.txt
+
+To run: There are 4 servers to start.
+open inventory-ui folder and run: npm run serve
+open client, inventory-service, auth-service folders and run: npm run dev
+
+create .env file in auth-services folder:
+DB_HOST=localhost
+DB_USER=root
+DB_PASS=password
+DB_NAME=ecommerce
+JWT_SECRET=somelongrandomstring
+PORT=4001
+
+
+
+
+
+
 Phase	Goal	What you build	Why in this order?
 0—Monolith “walking skeleton”	One React + Express app that lets users sign up, sign in, see products, add to cart, and a Store Manager can CRUD products.	You almost have this already. Finish the CRUD routes for products and a basic cart/checkout mock.	You need a fully-functioning baseline before you split anything; otherwise you’ll be debugging both features and infrastructure at the same time.
 1—Extract Auth + User Management service	Stand-alone service: /auth (login, refresh, roles) and /employees (CRUD, time entries). Client obtains JWT from this service; every other service just verifies the token.	Why Auth first? It’s small, has almost no external dependencies, but every other domain needs it. Moving it out forces you to learn service-to-service auth, CORS, and per-service environment config without touching high-throughput features.	
