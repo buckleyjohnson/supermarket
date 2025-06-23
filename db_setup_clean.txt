@@ -1,0 +1,140 @@
+-- Database Setup Script for Supermarket Application (Clean Install)
+-- Run this script as MySQL root user: mysql -u root -p < db_setup_clean.txt
+-- This script will DROP existing tables and recreate them from scratch
+
+-- Create databases
+CREATE DATABASE IF NOT EXISTS ecommerce CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS supermarket CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- Create user for the application
+CREATE USER IF NOT EXISTS 'inv_user'@'localhost' IDENTIFIED BY 'Password123!';
+
+-- Grant privileges
+GRANT ALL PRIVILEGES ON ecommerce.* TO 'inv_user'@'localhost';
+GRANT ALL PRIVILEGES ON supermarket.* TO 'inv_user'@'localhost';
+FLUSH PRIVILEGES;
+
+-- Use ecommerce database for user management tables
+USE ecommerce;
+
+-- Drop existing tables in correct order (to handle foreign key constraints)
+DROP TABLE IF EXISTS user_roles;
+DROP TABLE IF EXISTS time_entries;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS roles;
+
+-- Create roles table
+CREATE TABLE roles (
+  id          INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  name        VARCHAR(64)  NOT NULL UNIQUE,
+  created_at  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP
+                                     ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+-- Create users table
+CREATE TABLE users (
+  id            INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  email         VARCHAR(255) NOT NULL UNIQUE,
+  password_hash VARCHAR(255) NOT NULL,
+  created_at    TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at    TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP
+                                       ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+-- Create user_roles junction table
+CREATE TABLE user_roles (
+  user_id INT UNSIGNED NOT NULL,
+  role_id INT UNSIGNED NOT NULL,
+  PRIMARY KEY (user_id, role_id),
+
+  CONSTRAINT fk_userroles_user
+      FOREIGN KEY (user_id) REFERENCES users(id)
+      ON DELETE CASCADE,
+
+  CONSTRAINT fk_userroles_role
+      FOREIGN KEY (role_id) REFERENCES roles(id)
+      ON DELETE CASCADE
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci;
+
+-- Create time_entries table
+CREATE TABLE time_entries (
+  id         INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  user_id    INT UNSIGNED NOT NULL,
+  clock_in   DATETIME      NOT NULL,
+  clock_out  DATETIME      DEFAULT NULL,
+  
+  CONSTRAINT fk_time_user
+            FOREIGN KEY (user_id)
+            REFERENCES users(id)
+            ON DELETE CASCADE,
+  
+  INDEX ix_time_user_open (user_id, clock_out)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci;
+
+-- Add additional index for time_entries
+CREATE INDEX ix_time_date ON time_entries (clock_in, clock_out);
+
+-- Insert default roles
+INSERT INTO roles (name) VALUES
+  ('Customer'),
+  ('Cashier'),
+  ('Store Manager'),
+  ('Inventory Manager'),
+  ('Supplier'),
+  ('Marketing/CRM Manager'),
+  ('Stocking/Warehouse Staff'),
+  ('System Administrator');
+
+-- Use supermarket database for product management
+USE supermarket;
+
+-- Drop existing products table
+DROP TABLE IF EXISTS products;
+
+-- Create products table
+CREATE TABLE products (
+  id           INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  isdn         VARCHAR(20)  NOT NULL UNIQUE,
+  image_url    VARCHAR(500),
+  unit_size    VARCHAR(100),
+  name         VARCHAR(255) NOT NULL,
+  price_cents  INT UNSIGNED NOT NULL,
+  category     VARCHAR(100),
+  created_at   TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at   TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP
+                                      ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  INDEX idx_category (category),
+  INDEX idx_name (name),
+  INDEX idx_isdn (isdn)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+-- Insert sample users (using bcrypt hash for 'password123')
+USE ecommerce;
+INSERT INTO users (email, password_hash) VALUES
+  ('bob@bob.com', '$2b$10$/e.PaspQ1.o4/fIOC2wxie1TbhKFlQrI2I6NCDK3ByoYg8kn1PWDC'),
+  ('alice@example.com', '$2b$10$/e.PaspQ1.o4/fIOC2wxie1TbhKFlQrI2I6NCDK3ByoYg8kn1PWDC');
+
+-- Assign roles to users
+-- Bob gets Store Manager (id=3) and Customer (id=1) roles
+-- Alice gets Customer (id=1) role only
+INSERT INTO user_roles (user_id, role_id) VALUES
+  (1, 3),  -- Bob: Store Manager
+  (1, 1),  -- Bob: Customer
+  (2, 1);  -- Alice: Customer
+
+-- Insert sample products
+USE supermarket;
+INSERT INTO products
+  (isdn, image_url, unit_size, name, price_cents, category)
+VALUES
+  ('9780001112223', 'https://example.com/images/apple.jpg', '1 lb bag', 'Gala Apple', 199, 'Produce'),
+  ('9780001112224', 'https://example.com/images/banana.jpg', '2 lb bunch', 'Organic Bananas', 299, 'Produce'),
+  ('9780001112225', 'https://example.com/images/milk.jpg', '1 gallon', 'Whole Milk', 349, 'Dairy');

@@ -1,3 +1,15 @@
+Before running:
+
+mysql -u root -p < db_setup_clean.txt
+
+
+create database named supermarket with the table: products
+create database named ecommerce with the tables: roles, time_entries,
+user_roles, users
+
+look in the db_tables.txt for queries to create them.
+run script that creates db's and tables: mysql -u root -p < db_setup.txt
+
 To run: There are 4 servers to start.
 open inventory-ui folder and run: npm run serve
 open client, inventory-service, auth-service folders and run: npm run dev
