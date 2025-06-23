@@ -1,4 +1,12 @@
-Big-picture roadmap
+To run: 
+open inventory-ui folder and run: npm run serve
+open client folder and run: npm run dev
+
+
+
+
+
+
 Phase	Goal	What you build	Why in this order?
 0—Monolith “walking skeleton”	One React + Express app that lets users sign up, sign in, see products, add to cart, and a Store Manager can CRUD products.	You almost have this already. Finish the CRUD routes for products and a basic cart/checkout mock.	You need a fully-functioning baseline before you split anything; otherwise you’ll be debugging both features and infrastructure at the same time.
 1—Extract Auth + User Management service	Stand-alone service: /auth (login, refresh, roles) and /employees (CRUD, time entries). Client obtains JWT from this service; every other service just verifies the token.	Why Auth first? It’s small, has almost no external dependencies, but every other domain needs it. Moving it out forces you to learn service-to-service auth, CORS, and per-service environment config without touching high-throughput features.	
